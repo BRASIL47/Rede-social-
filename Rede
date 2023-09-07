@@ -1,0 +1,60 @@
+import socket
+import threading
+
+# Configuração do servidor
+host = '0.0.0.0'  # O servidor estará disponível em todas as interfaces
+port = 12345  # Porta para o chat público
+
+# Lista para armazenar mensagens
+mensagens = []
+
+# Função para lidar com as conexões dos clientes
+def lidar_com_cliente(client_socket):
+    while True:
+        try:
+            # Recebe mensagens do cliente
+            mensagem = client_socket.recv(1024).decode('utf-8')
+            if not mensagem:
+                break
+
+            # Adiciona a mensagem à lista de mensagens
+            mensagens.append(mensagem)
+
+            # Envia a mensagem para todos os clientes conectados
+            for cliente in clientes:
+                try:
+                    cliente.send(mensagem.encode('utf-8'))
+                except:
+                    # Se houver um erro ao enviar a mensagem para um cliente, desconecta o cliente
+                    clientes.remove(cliente)
+        except:
+            break
+
+# Cria um socket do servidor
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Liga o servidor ao host e porta
+server.bind((host, port))
+
+# Inicia o servidor
+server.listen(5)
+
+print(f"Servidor de chat público está rodando em {host}:{port}")
+
+# Lista para armazenar os clientes conectados
+clientes = []
+
+while True:
+    try:
+        # Aceita a conexão de um cliente
+        client, addr = server.accept()
+
+        # Adiciona o cliente à lista de clientes
+        clientes.append(client)
+
+        # Inicia uma thread para lidar com o cliente
+        client_handler = threading.Thread(target=lidar_com_cliente, args=(client,))
+        client_handler.start()
+    except KeyboardInterrupt:
+        print("Servidor encerrado.")
+        break
