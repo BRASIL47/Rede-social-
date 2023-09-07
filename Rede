@@ -2,7 +2,7 @@ import socket
 import threading
 
 # Configuração do servidor
-host = '0.0.0.0'  # O servidor estará disponível em todas as interfaces
+host = 'https://github.com/BRASIL47/Rede-social-.git'  # O servidor estará disponível em todas as interfaces
 port = 12345  # Porta para o chat público
 
 # Lista para armazenar mensagens
